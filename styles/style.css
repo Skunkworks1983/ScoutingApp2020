@@ -1,0 +1,40 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+body {
+  overflow-x: scroll;
+  overflow-y: hidden;
+}
+
+.scroll-container {
+  height: 100vh;
+  scroll-snap-type: x mandatory;
+  box-sizing: content-box;
+  white-space: nowrap;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  display: flex;
+  -webkit-overflow-scrolling: touch;
+  z-index: 1;
+}
+
+.chunk {
+  height: 100vh;
+  min-width: 100vw;
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+  display: flex;
+  flex-flow: column nowrap;
+  z-index: 2;
+  position: relative;
+}
+
+.temp {
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+}
