@@ -15,49 +15,178 @@
   <!-- <script defer src="./scripts/velocity.min.js"></script> -->
   <!-- <script defer src="./scripts/jquery.stellar.min.js"></script> -->
   <script defer src="./scripts/index.js"></script>
+  <script defer src="./scripts/updateRefs.js"></script>
   <!-- <script defer src="./scripts/warp.js"></script> -->
 
   <title>Scouting App 2020</title>
 </head>
 
-<body onload="init()">
-  <div class="background" data-stellar-background-ratio='0.5' id="background"></div>
-  <div class="scroll-container">
-    <div class="chunk temp">
-      <div class="chungus">
-        <canvas id="autoCanvas"></canvas>
-        <div class="chungoid">
-          <div class="chungalini">
+<body>
+  <form method="post" id="form">
+    <button type="button" id="teamNo" class="btn btn-danger">1983</button>
+    <div class="scroll-container">
 
+      <!-- Auto Page -->
+      <div class="chunk">
+        <div class="chungus">
+          <canvas id="autoCanvas"></canvas>
+          <div class="chungoid">
+            <fieldset class="form-group">
+              <legend>AUTO</legend>
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" id="crossLine" class="custom-control-input" title="crossLine">
+                <label for="crossLine" class="custom-control-label">Crossed Auto Line</label>
+              </div>
+              <br>
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" id="deadBot" class="custom-control-input" title="deadBot">
+                <label for="deadBot" class="custom-control-label">Dead Bot</label>
+              </div>
+              <br>
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" id="noShow" class="custom-control-input" title="noShow">
+                <label for="noShow" class="custom-control-label">No Show</label>
+              </div>
+            </fieldset>
+            <legend>CYCLES</legend>
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th scope="col">X</th>
+                  <th scope="col">Y</th>
+                  <th scope="col">Cells</th>
+                  <th scope="col">Lower</th>
+                  <th scope="col">Outer</th>
+                  <th scope="col">Inner</th>
+                  <th scope="col">&times;</th>
+                </tr>
+              </thead>
+              <div class="table">
+                <tbody id="autoTable"></tbody>
+              </div>
+            </table>
           </div>
         </div>
       </div>
-    </div>
-    <div class="spacer"></div>
-    <div class="chunk temp">
-      <div class="chungus">
-        <canvas id="teleCanvas"></canvas>
-        <div class="chungoid">
-          <div class="chungalini">
+      <!-- <div class="spacer"></div> -->
 
+      <!-- Tele Page -->
+      <div class="chunk">
+        <div class="chungus">
+          <canvas id="teleCanvas"></canvas>
+          <div class="chungoid">
+            <fieldset class="form-group">
+              <legend>TELE</legend>
+              <div>
+                <div>
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox" id="rotation" class="custom-control-input" title="rotation">
+                    <label for="rotation" class="custom-control-label">Control Panel Rotation</label>
+                  </div>
+                  <br>
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox" id="position" class="custom-control-input" title="position">
+                    <label for="position" class="custom-control-label">Control Panel Position</label>
+                  </div>
+                </div>
+                <div>
+
+                </div>
+              </div>
+            </fieldset>
+            <legend>CYCLES</legend>
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th scope="col">X</th>
+                  <th scope="col">Y</th>
+                  <th scope="col">Cells</th>
+                  <th scope="col">Lower</th>
+                  <th scope="col">Outer</th>
+                  <th scope="col">Inner</th>
+                  <th scope="col">&times;</th>
+                </tr>
+              </thead>
+              <div class="table">
+                <tbody id="teleTable"></tbody>
+              </div>
+            </table>
           </div>
         </div>
       </div>
+      <!-- <div class="spacer"></div> -->
+
+      <!-- Endgame Page -->
+      <div class="chunk">
+        <div class="chungus">
+
+        </div>
+      </div>
     </div>
-    <div class="spacer"></div>
-    <div class="chunk temp">
-      <div class="chungus endSlide"></div>
+    <button type="submit" class="btn btn-primary" id="submitBtn">Submit</button>
+  </form>
+
+  <!-- Auto Modal -->
+  <div class="modal fade" id="autoModal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Auto Shooting</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <span><label for="autoBallTotal">Total Shots</label><span id="autoBallTotalReadout" class="readout">5</span></span>
+          <input type="range" value="5" min="1" max="5" id="autoBallTotal" class="custom-range">
+          <br><br>
+          <hr>
+          <span></span><label for="autoLowerGoal">Scored in Lower Goal</label><span id="autoLowerGoalReadout" class="readout">0</span></span>
+          <input type="range" value="0" min="0" max="5" id="autoLowerGoal" class="custom-range">
+          <hr>
+          <span></span><label for="autoOuterGoal">Scored in Outer Goal</label><span id="autoOuterGoalReadout" class="readout">0</span></span>
+          <input type="range" value="0" min="0" max="5" id="autoOuterGoal" class="custom-range">
+          <hr>
+          <span></span><label for="autoInnerGoal">Scored in Inner Goal</label><span id="autoInnerGoalReadout" class="readout">0</span></span>
+          <input type="range" value="0" min="0" max="5" id="autoInnerGoal" class="custom-range">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" id="autoSave">Save</button>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- <div>
-        <div class="lightsaber">
-          <label for="darth"></label>
-          <input type="checkbox" id="darth" checked="checked">
-          <div class="switch"></div>
-          <div class="plasma vader"></div>
+  <!-- Tele Modal -->
+  <div class="modal fade" id="teleModal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Tele Shooting</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
         </div>
-      </div> -->
+        <div class="modal-body">
+          <span><label for="teleBallTotal">Total Shots</label><span id="teleBallTotalReadout" class="readout">5</span></span>
+          <input type="range" value="5" min="1" max="5" id="teleBallTotal" class="custom-range">
+          <br><br>
+          <hr>
+          <span></span><label for="teleLowerGoal">Scored in Lower Goal</label><span id="teleLowerGoalReadout" class="readout">0</span></span>
+          <input type="range" value="0" min="0" max="5" id="teleLowerGoal" class="custom-range">
+          <hr>
+          <span></span><label for="teleOuterGoal">Scored in Outer Goal</label><span id="teleOuterGoalReadout" class="readout">0</span></span>
+          <input type="range" value="0" min="0" max="5" id="teleOuterGoal" class="custom-range">
+          <hr>
+          <span></span><label for="teleInnerGoal">Scored in Inner Goal</label><span id="teleInnerGoalReadout" class="readout">0</span></span>
+          <input type="range" value="0" min="0" max="5" id="teleInnerGoal" class="custom-range">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" id="teleSave">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 </body>
 
