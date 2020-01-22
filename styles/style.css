@@ -22,7 +22,7 @@ table {
   text-align: center;
 }
 
-.table {
+.scroll {
   overflow-y: scroll;
 }
 
@@ -110,6 +110,17 @@ legend {
 .chungoid {
   width: 100%;
   height: 100vh;
+}
+
+.split-column {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.split-column>* {
+  flex: 1 50%;
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
 #teamNo {

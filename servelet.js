@@ -14,6 +14,14 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'match.html'));
 })
 
+app.get('/prematch', (req, res) => {
+  res.sendFile(path.join(__dirname, 'prematch.html'));
+})
+
+app.get('/settings', (req, res) => {
+  res.sendFile(path.join(__dirname, 'settings.html'));
+})
+
 app.listen(port, () => {
   console.log(`Deploying app on port ${port}!`)
 })

@@ -14,7 +14,7 @@
   <script defer src="./scripts/popper.min.js"></script>
   <!-- <script defer src="./scripts/velocity.min.js"></script> -->
   <!-- <script defer src="./scripts/jquery.stellar.min.js"></script> -->
-  <script defer src="./scripts/index.js"></script>
+  <script defer src="./scripts/match.js"></script>
   <script defer src="./scripts/updateRefs.js"></script>
   <!-- <script defer src="./scripts/warp.js"></script> -->
 
@@ -22,79 +22,36 @@
 </head>
 
 <body>
-  <form method="post" id="form">
-    <button type="button" id="teamNo" class="btn btn-danger">1983</button>
-    <div class="scroll-container">
-
-      <!-- Auto Page -->
-      <div class="chunk">
-        <div class="chungus">
-          <canvas id="autoCanvas"></canvas>
-          <div class="chungoid">
-            <fieldset class="form-group">
-              <legend>AUTO</legend>
-              <div class="custom-control custom-checkbox">
-                <input type="checkbox" id="crossLine" class="custom-control-input" title="crossLine">
-                <label for="crossLine" class="custom-control-label">Crossed Auto Line</label>
-              </div>
-              <br>
-              <div class="custom-control custom-checkbox">
-                <input type="checkbox" id="deadBot" class="custom-control-input" title="deadBot">
-                <label for="deadBot" class="custom-control-label">Dead Bot</label>
-              </div>
-              <br>
-              <div class="custom-control custom-checkbox">
-                <input type="checkbox" id="noShow" class="custom-control-input" title="noShow">
-                <label for="noShow" class="custom-control-label">No Show</label>
-              </div>
-            </fieldset>
-            <legend>CYCLES</legend>
-            <table class="table table-hover">
-              <thead>
-                <tr>
-                  <th scope="col">X</th>
-                  <th scope="col">Y</th>
-                  <th scope="col">Cells</th>
-                  <th scope="col">Lower</th>
-                  <th scope="col">Outer</th>
-                  <th scope="col">Inner</th>
-                  <th scope="col">&times;</th>
-                </tr>
-              </thead>
-              <div class="table">
-                <tbody id="autoTable"></tbody>
-              </div>
-            </table>
-          </div>
-        </div>
-      </div>
-      <!-- <div class="spacer"></div> -->
-
-      <!-- Tele Page -->
-      <div class="chunk">
-        <div class="chungus">
-          <canvas id="teleCanvas"></canvas>
-          <div class="chungoid">
-            <fieldset class="form-group">
-              <legend>TELE</legend>
+  <button type="button" id="teamNo" class="btn">#</button>
+  <div class=" scroll-container">
+    <!-- Auto Page -->
+    <div class="chunk">
+      <div class="chungus">
+        <canvas id="autoCanvas"></canvas>
+        <div class="chungoid">
+          <fieldset class="form-group">
+            <legend>AUTO</legend>
+            <div class="split-column">
               <div>
-                <div>
-                  <div class="custom-control custom-checkbox">
-                    <input type="checkbox" id="rotation" class="custom-control-input" title="rotation">
-                    <label for="rotation" class="custom-control-label">Control Panel Rotation</label>
-                  </div>
-                  <br>
-                  <div class="custom-control custom-checkbox">
-                    <input type="checkbox" id="position" class="custom-control-input" title="position">
-                    <label for="position" class="custom-control-label">Control Panel Position</label>
-                  </div>
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" id="crossLine" class="custom-control-input" title="crossLine">
+                  <label for="crossLine" class="custom-control-label">Crossed Auto Line</label>
                 </div>
-                <div>
-
+                <br>
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" id="deadBot" class="custom-control-input" title="deadBot">
+                  <label for="deadBot" class="custom-control-label">Dead Bot</label>
+                </div>
+                <br>
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" id="noShow" class="custom-control-input" title="noShow">
+                  <label for="noShow" class="custom-control-label">No Show</label>
                 </div>
               </div>
-            </fieldset>
-            <legend>CYCLES</legend>
+            </div>
+          </fieldset>
+          <legend>CYCLES</legend>
+          <div class="scroll">
             <table class="table table-hover">
               <thead>
                 <tr>
@@ -107,24 +64,79 @@
                   <th scope="col">&times;</th>
                 </tr>
               </thead>
-              <div class="table">
-                <tbody id="teleTable"></tbody>
-              </div>
+              <tbody id="autoTable"></tbody>
             </table>
           </div>
-        </div>
-      </div>
-      <!-- <div class="spacer"></div> -->
-
-      <!-- Endgame Page -->
-      <div class="chunk">
-        <div class="chungus">
-
         </div>
       </div>
     </div>
-    <button type="submit" class="btn btn-primary" id="submitBtn">Submit</button>
-  </form>
+    <!-- Tele Page -->
+    <div class="chunk">
+      <div class="chungus">
+        <canvas id="teleCanvas"></canvas>
+        <div class="chungoid">
+          <fieldset class="form-group">
+            <legend>TELE</legend>
+            <div class="split-column">
+              <div>
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" id="rotation" class="custom-control-input" title="rotation">
+                  <label for="rotation" class="custom-control-label">Control Panel Rotation</label>
+                </div>
+                <br>
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" id="position" class="custom-control-input" title="position">
+                  <label for="position" class="custom-control-label">Control Panel Position</label>
+                </div>
+                <br>
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" id="park" class="custom-control-input" title="park">
+                  <label for="park" class="custom-control-label">Park</label>
+                </div>
+              </div>
+              <div>
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" id="hang" class="custom-control-input" title="hang">
+                  <label for="hang" class="custom-control-label">Hang</label>
+                </div>
+                <br>
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" id="doubleHang" class="custom-control-input" title="doubleHang">
+                  <label for="doubleHang" class="custom-control-label">Double Hang</label>
+                </div>
+                <br>
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" id="assistedHang" class="custom-control-input" title="assistedHang">
+                  <label for="assistedHang" class="custom-control-label">Assisted Hang</label>
+                </div>
+              </div>
+            </div>
+          </fieldset>
+          <legend>CYCLES</legend>
+          <div class="scroll">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th scope="col">X</th>
+                  <th scope="col">Y</th>
+                  <th scope="col">Cells</th>
+                  <th scope="col">Lower</th>
+                  <th scope="col">Outer</th>
+                  <th scope="col">Inner</th>
+                  <th scope="col">&times;</th>
+                </tr>
+              </thead>
+              <tbody id="teleTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button type="submit" class="btn btn-primary" id="submitBtn">Submit</button>
+
+  <!-- Loading Screen -->
+  <!-- <div></div> -->
 
   <!-- Auto Modal -->
   <div class="modal fade" id="autoModal">
