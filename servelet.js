@@ -5,7 +5,7 @@ const port = 2097;
 
 var app = express();
 
-app.use(express.static(path.join(__dirname)));
+app.use(express.static(__dirname));
 app.use(logger('dev'));
 
 module.exports = app;

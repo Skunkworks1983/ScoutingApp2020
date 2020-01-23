@@ -1,19 +1,20 @@
 var autoCanvas, autoCtx, teleCanvas, teleCtx, field;
 var totalBalls, lowerBalls, outerBalls, innerBalls, coords;
-const dotSize = 6;
-var shots = new Array;
+const dotSize = 12;
+var autoShots = new Array;
+var teleShots = new Array;
 let autoHistory = new Array;
 let teleHistory = new Array;
 
-try {
-  const match = parseInt(localStorage.getItem('currentMatch'), 10);
-  const position = localStorage.getItem('scoutPosition');
-  const schedule = JSON.parse(localStorage.getItem('schedule')[(match - 1)]);
-  const alliance = localStorage.getItem('alliance');
-  const team = parseInt(schedule.alliances[alliance].team_keys[position], 10)
-} catch {
-  alert('Error, you do not have a match schedule or settings configured!');
-}
+// try {
+const match = parseInt(localStorage.getItem('match'), 10);
+const station = parseInt(localStorage.getItem('station'));
+const schedule = JSON.parse(localStorage.getItem('schedule'))[match - 1];
+let alliance = localStorage.getItem('alliance') === 'Red' ? 'red' : 'blue';
+const team = parseInt(schedule.alliances[alliance].team_keys[station - 1].substring(3), 10);
+// } catch {
+//   alert('Error, you do not have a match schedule or settings configured!');
+// }
 
 function drawDot(ctx, x, y, size) {
   r = 0;
@@ -25,7 +26,7 @@ function drawDot(ctx, x, y, size) {
 
   ctx.beginPath();
   // for some reason coords are offset by 2 
-  ctx.arc(x / 2, y / 2, size, 0, Math.PI * 2, true);
+  ctx.arc(x, y, size, 0, Math.PI * 2, true);
   ctx.closePath();
   ctx.fill();
 }
@@ -34,6 +35,16 @@ function drawDot(ctx, x, y, size) {
 function savePoint(e) {
   let index;
   let phase = e.target.id.substring(0, 4);
+  // save slider values
+  totalBalls = parseInt($(`#${phase}BallTotal`).val());
+  lowerBalls = parseInt($(`#${phase}LowerGoal`).val());
+  outerBalls = parseInt($(`#${phase}OuterGoal`).val());
+  innerBalls = parseInt($(`#${phase}InnerGoal`).val());
+
+  if (totalBalls < (lowerBalls + outerBalls + innerBalls)) {
+    return alert('More cells have been scored than shot!');
+  }
+
   if (phase === 'auto') {
     $('#autoModal').off('hidden.bs.modal');
     index = autoHistory.length - 1;
@@ -43,47 +54,56 @@ function savePoint(e) {
     index = teleHistory.length - 1;
     coords = teleHistory[index];
   }
-  // save slider values
-  totalBalls = $(`#${phase}BallTotal`).val();
-  lowerBalls = $(`#${phase}LowerGoal`).val();
-  outerBalls = $(`#${phase}OuterGoal`).val();
-  innerBalls = $(`#${phase}InnerGoal`).val();
+
   $(`#${phase}Table`).append(`<tr><td>${coords.x}</td><td>${coords.y}</td><td>${totalBalls}</td><td>${lowerBalls}</td><td>${outerBalls}</td><td>${innerBalls}</td><td class="${phase}Delete" onclick="deleteCanvas(this)" id="${phase}-${index}">&times;</td></tr>`);
 
   $(`#${phase}Modal`).modal('hide');
 
-  shots.push({
-    phase,
-    totalBalls,
-    lowerBalls,
-    outerBalls,
-    innerBalls
-  });
+  if (phase === 'auto') {
+    autoShots.push({
+      phase,
+      totalBalls,
+      lowerBalls,
+      outerBalls,
+      innerBalls
+    });
+  } else {
+    teleShots.push({
+      phase,
+      totalBalls,
+      lowerBalls,
+      outerBalls,
+      innerBalls
+    });
+  }
 
   // Set sliders to default
   $(`#${phase}BallTotal`).val(5);
   $(`#${phase}LowerGoal`).val(0);
   $(`#${phase}OuterGoal`).val(0);
   $(`#${phase}InnerGoal`).val(0);
+  $(`#${phase}BallTotalReadout`).html(5);
+  $(`#${phase}LowerGoalReadout`).html(0);
+  $(`#${phase}OuterGoalReadout`).html(0);
+  $(`#${phase}InnerGoalReadout`).html(0);
 }
 
 function deleteCanvas(e) {
   let phase = e.id.substring(0, 4);
   let index = e.id.substring(5);
-  console.log(e);
   $(e.parentElement).remove();
   if (phase === 'auto') {
-    autoHistory.splice(index, 1);
-    shots.splice(index, 1);
-    autoCtx.clearRect(0, 0, 600, 300);
-    for (let i of autoHistory) {
+    autoHistory[index] = null;
+    autoShots[index] = null;
+    autoCtx.clearRect(0, 0, 600, 360);
+    for (let i of autoHistory.filter(e => e !== null)) {
       drawDot(autoCtx, i.x, i.y, dotSize);
     }
   } else {
-    teleHistory.splice(index, 1);
-    shots.splice(index, 1);
-    teleCtx.clearRect(0, 0, 600, 300);
-    for (let i of teleHistory) {
+    teleHistory[index] = null;
+    teleShots[index] = null;
+    teleCtx.clearRect(0, 0, 600, 360);
+    for (let i of teleHistory.filter(e => e !== null)) {
       drawDot(teleCtx, i.x, i.y, dotSize);
     }
   }
@@ -92,14 +112,14 @@ function deleteCanvas(e) {
 function undoCanvas(phase) {
   if (phase === 'auto') {
     autoHistory.pop();
-    autoCtx.clearRect(0, 0, 600, 300);
-    for (let i of autoHistory) {
+    autoCtx.clearRect(0, 0, 600, 360);
+    for (let i of autoHistory.filter(e => e !== null)) {
       drawDot(autoCtx, i.x, i.y, dotSize);
     }
   } else {
     teleHistory.pop();
-    teleCtx.clearRect(0, 0, 600, 300);
-    for (let i of teleHistory) {
+    teleCtx.clearRect(0, 0, 600, 360);
+    for (let i of teleHistory.filter(e => e !== null)) {
       drawDot(teleCtx, i.x, i.y, dotSize);
     }
   }
@@ -165,20 +185,18 @@ function initCanvas() {
 }
 
 $(document).ready(() => {
-  teamBadge = $('#teamNo');
-  teamBadge.html(team);
-
-  if (alliance === 'red') {
-    teamBadge.attr('class', 'btn btn-danger');
-  } else if (alliance === 'blue') {
-    teamBadge.attr('class', 'btn btn-info')
+  try {
+    teamBadge = $('#teamNo');
+    teamBadge.html(team);
+    if (alliance === 'red') {
+      teamBadge.addClass('btn-danger');
+    } else if (alliance === 'blue') {
+      teamBadge.addClass('btn-info');
+    }
+  } catch {
+    console.warn('Missing config info');
   }
-
   initCanvas();
-
-  $('#submitBtn').on('submit', (e) => {
-    e.preventDefault();
-  }, false)
 
   $('#autoSave').click(savePoint);
   $('#teleSave').click(savePoint);
@@ -190,6 +208,8 @@ $(document).ready(() => {
         team,
         alliance,
         match,
+        station,
+        event: schedule[0].event_key,
         crossLine: $('#crossLine:checked').length ? true : false,
         deadBot: $('#deadBot:checked').length ? true : false,
         noShow: $('#noShow:checked').length ? true : false,
@@ -198,13 +218,15 @@ $(document).ready(() => {
         park: $('#park:checked').length ? true : false,
         hang: $('#hang:checked').length ? true : false,
         doubleHang: $('#doubleHang:checked').length ? true : false,
-        shots,
+        autoShots: autoShots.filter(e => e !== null),
+        teleShots: teleShots.filter(e => e !== null)
       };
 
       let coordData = {
-        autoHistory,
-        teleHistory,
-        shots
+        autoHistory: autoHistory.filter(e => e !== null),
+        teleHistory: teleHistory.filter(e => e !== null),
+        autoShots: autoShots.filter(e => e !== null),
+        teleShots: teleShots.filter(e => e !== null)
       };
 
       // fetch('http://73.109.240.48:1983/scouting/data/match', {

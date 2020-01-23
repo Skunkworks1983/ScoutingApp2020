@@ -4,11 +4,73 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="./styles/bootstrap.min.css">
+  <link rel="stylesheet" href="./styles/settings.css">
+
+  <script defer src="./scripts/jquery-3.4.1.min.js"></script>
+  <script defer src="./scripts/bootstrap.min.js"></script>
+  <script defer src="./scripts/popper.min.js"></script>
+  <!-- <script defer src="./scripts/velocity.min.js"></script> -->
+  <!-- <script defer src="./scripts/jquery.stellar.min.js"></script> -->
+  <script defer src="./scripts/settings.js"></script>
+  <!-- <script defer src="./scripts/warp.js"></script> -->
+
   <title>Settings</title>
 </head>
 
 <body>
-
+  <br>
+  <h1>SETTINGS</h1>
+  <div style="flex: 0.8" class="form-group">
+    <div class="input-group mb-3">
+      <div class="input-group-prepend">
+        <span class="input-group-text">Event</span>
+      </div>
+      <input type="text" maxlength="9" minlength="6" id="eventCode" class="form-control" placeholder="Event Code">
+    </div>
+    <div class="form-group">
+      <button type="button" id="getSchedule" class="btn btn-danger">Get Schedule</button>
+      <button type="button" id="clear" class="btn btn-danger" onclick="if(confirm('Do you want to clear the storage?')) {localStorage.clear(); location.reload()}">Clear Storage</button>
+    </div>
+  </div>
+  <div style="flex: 0.5">
+    <h6>Tablet Station</h6>
+    <select name="tabletStation" id="station" class="custom-select">
+      <option value="null" selected>Select Scout Station</option>
+      <optgroup label="Red">
+        <option value="Red1">Red 1</option>
+        <option value="Red2">Red 2</option>
+        <option value="Red3">Red 3</option>
+      </optgroup>
+      <optgroup label="Blue">
+        <option value="Blu1">Blue 1</option>
+        <option value="Blu2">Blue 2</option>
+        <option value="Blu3">Blue 3</option>
+      </optgroup>
+    </select>
+  </div>
+  <div style="flex: 5" class="scroll">
+    <h5>Local Match Entries</h5>
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <td scope="col">#</td>
+          <td scope="col">Event</td scope="col">
+          <td scope="col">Match</td scope="col">
+          <td scope="col">Team</td scope="col">
+          <td scope="col">&times;</td>
+        </tr>
+      </thead>
+      <tbody id="table"></tbody>
+    </table>
+  </div>
+  <div style="flex: 0.5">
+    <button type="button" id="upload" class="btn btn-primary">Upload Selected</button>
+    <button type="button" id="delete" class="btn btn-primary">Delete Selected</button>
+  </div>
+  <div>
+    <button type="button" id="continue" class="btn btn-lg btn-outline-success">Save</button>
+  </div>
 </body>
 
 </html>

@@ -18,12 +18,20 @@ body {
   overflow-y: hidden;
 }
 
-table {
+tbody {
+  position: relative;
   text-align: center;
+  table-layout: fixed;
+  overflow-y: scroll;
+}
+
+thead {
+  position: sticky;
 }
 
 .scroll {
-  overflow-y: scroll;
+  height: 50vh;
+  overflow-y: scroll !important;
 }
 
 input[type='range'] {
@@ -58,7 +66,7 @@ canvas {
   background-size: cover;
 
   width: 600px;
-  height: 300px;
+  height: 360px;
 }
 
 legend {
@@ -91,6 +99,8 @@ legend {
   border: 0.3rem solid black;
 
   box-sizing: content-box;
+
+  /* overflow-y: scroll; */
 }
 
 .spacer {
@@ -118,7 +128,6 @@ legend {
 }
 
 .split-column>* {
-  flex: 1 50%;
   padding-left: 1rem;
   padding-right: 1rem;
 }

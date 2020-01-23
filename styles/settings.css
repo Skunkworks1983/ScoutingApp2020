@@ -1,0 +1,42 @@
+body {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+}
+
+body>div {
+  flex: 1;
+}
+
+table {
+  width: 100vh
+}
+
+.scroll {
+  height: 100vh;
+  overflow-y: scroll !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  text-align: center;
+}
+
+option {
+  background-color: #dadada;
+}
+
+optgroup[label='Red'],
+optgroup[label='Red']>option {
+  background-color: #f4cfce;
+}
+
+optgroup[label='Blue'],
+optgroup[label='Blue']>option {
+  background-color: #c0e3f2;
+}
