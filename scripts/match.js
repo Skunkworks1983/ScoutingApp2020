@@ -1,3 +1,6 @@
+const DEBUG = true;
+const url = !DEBUG ? "http://73.109.240.48:1983/scouting" : "http://127.0.0.1:1983/scouting";
+
 var autoCanvas, autoCtx, teleCanvas, teleCtx, field;
 var totalBalls, lowerBalls, outerBalls, innerBalls, coords;
 const dotSize = 12;
@@ -6,15 +9,16 @@ var teleShots = new Array;
 let autoHistory = new Array;
 let teleHistory = new Array;
 
-// try {
-const match = parseInt(localStorage.getItem('match'), 10);
-const station = parseInt(localStorage.getItem('station'));
-const schedule = JSON.parse(localStorage.getItem('schedule'))[match - 1];
-let alliance = localStorage.getItem('alliance') === 'Red' ? 'red' : 'blue';
-const team = parseInt(schedule.alliances[alliance].team_keys[station - 1].substring(3), 10);
-// } catch {
-//   alert('Error, you do not have a match schedule or settings configured!');
-// }
+try {
+  match = parseInt(localStorage.getItem('match'), 10);
+  station = parseInt(localStorage.getItem('station'));
+  scout = localStorage.getItem('scout');
+  schedule = JSON.parse(localStorage.getItem('schedule'))[match - 1];
+  alliance = localStorage.getItem('alliance') === 'Red' ? 'red' : 'blue';
+  team = parseInt(schedule.alliances[alliance].team_keys[station - 1].substring(3), 10);
+} catch {
+  alert('Error, you do not have a match schedule or settings configured!');
+}
 
 function drawDot(ctx, x, y, size) {
   r = 0;
@@ -29,6 +33,12 @@ function drawDot(ctx, x, y, size) {
   ctx.arc(x, y, size, 0, Math.PI * 2, true);
   ctx.closePath();
   ctx.fill();
+}
+
+function goToPrematch() {
+  let path = location.pathname.split('/');
+  path.splice(path.length - 1, 1);
+  setTimeout(() => location.href = `${location.protocol}${path.join('/')}/prematch.html`, 300);
 }
 
 // phase is either 'tele' or 'auto'
@@ -184,6 +194,105 @@ function initCanvas() {
   }
 }
 
+async function uploadData(e) {
+  fetch(`${url}/data/match`, {
+      mode: 'cors',
+      method: 'PUT',
+      body: JSON.stringify(e),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(res => {
+      goToPrematch();
+      return true
+    })
+    .catch(err => {
+      console.warn(err);
+      if (localStorage.storedMatches) {
+        localStorage.setItem('storedMatches', JSON.stringify(JSON.parse(localStorage.getItem('storedMatches')).push(e)));
+      } else {
+        localStorage.setItem('storedMatches', JSON.stringify([e]));
+      }
+      goToPrematch();
+      return false
+    });
+}
+
+async function uploadShots(e) {
+  fetch(`${url}/data/shooting`, {
+      mode: 'cors',
+      method: 'PUT',
+      body: JSON.stringify(e),
+      headers: {
+        'Content-Type': 'application/json',
+        'x-stats-team': team
+      }
+    })
+    .then(res => {
+      return true
+    })
+    .catch(err => {
+      console.warn(err);
+      let shotArr = e;
+      shotArr.team = team;
+      if (localStorage.storedCoords) {
+        localStorage.setItem('storedCoords', JSON.stringify(JSON.parse(localStorage.getItem('storedCoords')).push(shotArr)));
+      } else {
+        localStorage.setItem('storedCoords', JSON.stringify([shotArr]));
+      }
+      return false
+    });
+}
+
+function validateSubmit() {
+  let valid = true;
+  if ($('#noShow:checked').length && $('*:checked').length) {
+    valid = false;
+    $('#noShow').addClass('is-invalid');
+  } else if ($('input[type="radio"]:checked').length < 1) {
+    $('#noShow').removeClass('is-invalid').addClass('is-valid');
+    valid = false;
+    $('input[type="radio"]').addClass('is-invalid');
+  }
+
+  if (valid) {
+    if (confirm('Do you want to submit?')) {
+      // Gather all inputs
+      let data = {
+        team,
+        alliance,
+        match,
+        station,
+        scout,
+        event: schedule.event_key,
+        crossLine: $('#crossLine:checked').length ? true : false,
+        deadBot: $('#deadBot:checked').length ? true : false,
+        noShow: $('#noShow:checked').length ? true : false,
+        rotation: $('#rotation:checked').length ? true : false,
+        position: $('#position:checked').length ? true : false,
+        park: $('#park:checked').length ? true : false,
+        hang: $('#hang:checked').length ? true : false,
+        stuckBall: $('#stuckBall').length ? true : false,
+        doubleHang: $('#doubleHang:checked').length ? true : false,
+        autoShots: autoShots.filter(e => e !== null),
+        teleShots: teleShots.filter(e => e !== null)
+      };
+
+      let coordData = {
+        autoHistory: autoHistory.filter(e => e !== null),
+        teleHistory: teleHistory.filter(e => e !== null),
+        autoShots: autoShots.filter(e => e !== null),
+        teleShots: teleShots.filter(e => e !== null)
+      };
+      uploadShots(coordData);
+      uploadData(data);
+    } else {
+      alert('There are errors in the form!');
+    }
+  }
+}
+
 $(document).ready(() => {
   try {
     teamBadge = $('#teamNo');
@@ -201,46 +310,5 @@ $(document).ready(() => {
   $('#autoSave').click(savePoint);
   $('#teleSave').click(savePoint);
 
-  $('#submitBtn').click(() => {
-    if (confirm('Do you want to submit?')) {
-      // Gather all inputs
-      let data = {
-        team,
-        alliance,
-        match,
-        station,
-        event: schedule[0].event_key,
-        crossLine: $('#crossLine:checked').length ? true : false,
-        deadBot: $('#deadBot:checked').length ? true : false,
-        noShow: $('#noShow:checked').length ? true : false,
-        rotation: $('#rotation:checked').length ? true : false,
-        position: $('#position:checked').length ? true : false,
-        park: $('#park:checked').length ? true : false,
-        hang: $('#hang:checked').length ? true : false,
-        doubleHang: $('#doubleHang:checked').length ? true : false,
-        autoShots: autoShots.filter(e => e !== null),
-        teleShots: teleShots.filter(e => e !== null)
-      };
-
-      let coordData = {
-        autoHistory: autoHistory.filter(e => e !== null),
-        teleHistory: teleHistory.filter(e => e !== null),
-        autoShots: autoShots.filter(e => e !== null),
-        teleShots: teleShots.filter(e => e !== null)
-      };
-
-      // fetch('http://73.109.240.48:1983/scouting/data/match', {
-      //   headers: {
-      //     'Content-Type': 'application/json'
-      //   }
-      // });
-
-      // fetch('http://73.109.240.48:1983/scouting/data/shooting', {
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     'x-stats-team': team
-      //   }
-      // });
-    }
-  })
-});
+  $('#submitBtn').click(validateSubmit);
+})

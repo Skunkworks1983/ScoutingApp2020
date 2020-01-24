@@ -48,7 +48,7 @@ function goToSettings() {
 }
 
 function populateInfo() {
-  if (localStorage.key('scout') && localStorage.key('match')) {
+  if (localStorage.scout && localStorage.match) {
     $('#matchNo').val(parseInt(localStorage.getItem('match')) + 1);
     $('#scouts').val(localStorage.getItem('scout'));
   }

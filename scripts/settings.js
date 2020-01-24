@@ -1,4 +1,4 @@
-const DEBUG = false;
+const DEBUG = true;
 const url = !DEBUG ? "http://73.109.240.48:1983/scouting" : "http://127.0.0.1:1983/scouting";
 
 function requestSchedule(target) {
@@ -102,6 +102,32 @@ function uploadSelected() {
 
 }
 
+function uploadCoords() {
+  if (localStorage.storedCoords) {
+    let coords = JSON.parse(localStorage.getItem('storedCoords'));
+    for (let i = 0; i < coords.length; i++) {
+      fetch(`${url}/data/shooting`, {
+          mode: 'cors',
+          method: 'PUT',
+          body: JSON.stringify(coords[i]),
+          headers: {
+            'Content-Type': 'application/json',
+            'x-stats-team': coords[i].team
+          }
+        })
+        .then(res => {
+          coords.splice(i, 1);
+        })
+        .catch(err => {
+          console.error(err);
+        })
+    }
+    localStorage.setItem('storedCoords', coords);
+  } else {
+    alert('No saved coordinates!');
+  }
+}
+
 function init() {
   try {
     const schedule = JSON.parse(localStorage.getItem('schedule'));
@@ -122,6 +148,10 @@ function init() {
 
   $('#continue').click(() => {
     saveSettings();
+  })
+
+  $('#coords').click(() => {
+    uploadCoords();
   })
 }
 
