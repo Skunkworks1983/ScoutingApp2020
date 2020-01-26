@@ -1,8 +1,11 @@
-const DEBUG = false;
+const DEBUG = true;
 const url = !DEBUG ? "http://73.109.240.48:1983/scouting" : "http://127.0.0.1:1983/scouting";
 
 function requestSchedule(target) {
   $('#getSchedule').attr('class', 'btn btn-warning');
+  if (localStorage.schedule) {
+    localStorage.removeItem('schedule');
+  }
   fetch(`${url}/tba`, {
       method: 'GET',
       mode: 'cors',
@@ -10,29 +13,30 @@ function requestSchedule(target) {
         'x-stats-tba-redirect-url': `https://www.thebluealliance.com/api/v3/event/${target}/matches/simple`,
       }
     })
-    .then((res) => {
+    .then(res => {
       return res.json();
     })
-    .then((data) => {
+    .then(data => {
       localStorage.setItem('schedule', JSON.stringify(data.filter(e => e.comp_level === 'qm').sort((a, b) => a.match_number - b.match_number)));
       location.reload();
     })
-    .catch((err) => {
+    .catch(err => {
       console.warn(err);
       // try and get the custom schedule instead
       fetch(`${url}/schedule`, {
           method: 'GET',
           mode: 'cors',
         })
-        .then((res) => {
+        .then(res => {
           return res.json();
         })
-        .then((data) => {
+        .then(data => {
           localStorage.setItem('schedule', JSON.stringify(data.filter(e => e.comp_level === 'qm').sort((a, b) => a.match_number - b.match_number)));
           location.reload();
         })
-        .catch((err) => {
+        .catch(err => {
           console.error(err);
+          $('#getSchedule').attr('class', 'btn btn-danger');
           alert('There was a problem retrieving the match schedule.');
         })
     });
@@ -70,22 +74,32 @@ function saveSettings() {
 }
 
 function populateMatches() {
-  let table = $('#table');
-  let items = JSON.parse(localStorage.getItem('matches'));
-  for (let i = 0; i < items.length; i++) {
-    table.append(`<tr data-index="${i}"><td><div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" id="${i}"></div></td><td>${items[i].event}</td><td>${items[i].match}</td><td>${items[i].team}</td><td onclick="deleteMatch(this, ${i})">&times;</td></tr>`);
+  if (localStorage.storedMatches) {
+    let table = $('#table');
+    let items = JSON.parse(localStorage.getItem('storedMatches'));
+    for (let i = 0; i < items.length; i++) {
+      table.append(`<tr data-index="${i}"><td class="custom-control custom-switch" style="float: right"><input type="checkbox" class="custom-control-input" id="${i}"><label class="custom-control-label" for="${i}"></label></td><td>${items[i].event}</td><td>${items[i].match}</td><td>${items[i].team}</td><td onclick="deleteMatch(this, ${i})">&times;</td></tr>`);
+    }
   }
 }
 
-// return the indicies of selected elements, if any
-function getSelected() {
+function selectAll() {
+  $('input[type="checkbox"]').prop('checked', true);
+  $('#selectAll').off().html('Deselect All').click(deselectAll);
+}
 
+function deselectAll() {
+  $('input[type="checkbox"]').prop('checked', false);
+  $('#selectAll').off().html('Select All').click(selectAll);
 }
 
 // delete a single match
 function deleteMatch(e, index) {
   if (confirm('Are you sure you want to delete this match?')) {
-
+    let matches = JSON.parse(localStorage.getItem('storedMatches'));
+    matches.splice(index, 1);
+    localStorage.setItem('storedMatches', JSON.stringify(matches));
+    $(e).parent('tr').remove();
   }
 }
 
@@ -93,19 +107,48 @@ function deleteMatch(e, index) {
 function deleteSelected() {
   // TODO: first check if any matches are selected
   if (confirm('Are you sure you want to delete all selected matches?')) {
-
+    let containers = $('input[type="checkbox"]:checked').parents('tr');
+    let matches = JSON.parse(localStorage.getItem('storedMatches'));
+    for (let i of containers) {
+      let index = $(i).attr('data-index');
+      matches.splice(index, 1);
+      $(i).remove();
+    }
+    localStorage.setItem('storedMatches', JSON.stringify(matches));
   }
 }
 
 // upload selected matches
 function uploadSelected() {
-
+  let containers = $('input[type="checkbox"]:checked').parents('tr');
+  let matches = JSON.parse(localStorage.getItem('storedMatches'));
+  for (let i = containers.length - 1; i >= 0; i--) {
+    let index = $(containers[i]).attr('data-index');
+    fetch(`${url}/data/match`, {
+        mode: 'cors',
+        method: 'PUT',
+        body: JSON.stringify(matches[index]),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(res => {
+        matches[index] = null;
+        $(containers[i]).remove();
+        localStorage.setItem('storedMatches', JSON.stringify(matches.filter(e => e !== null)));
+      })
+      .catch(err => {
+        console.warn(err);
+        $('#upload').attr('class', 'btn btn-danger');
+        $(`input[id="${index}"]`).addClass('is-invalid');
+      })
+  }
 }
 
 function uploadCoords() {
   if (localStorage.storedCoords) {
     let coords = JSON.parse(localStorage.getItem('storedCoords'));
-    for (let i = 0; i < coords.length; i++) {
+    for (let i = coords.length - 1; i >= 0; i--) {
       fetch(`${url}/data/shooting`, {
           mode: 'cors',
           method: 'PUT',
@@ -117,12 +160,14 @@ function uploadCoords() {
         })
         .then(res => {
           coords.splice(i, 1);
+          console.log(coords);
+          localStorage.setItem('storedCoords', JSON.stringify(coords));
         })
         .catch(err => {
           console.error(err);
+          $('#coords').attr('class', 'btn btn-danger');
         })
     }
-    localStorage.setItem('storedCoords', coords);
   } else {
     alert('No saved coordinates!');
   }
@@ -140,10 +185,22 @@ function init() {
   if (localStorage.getItem('station')) {
     $('#station').val(localStorage.getItem('alliance') + localStorage.getItem('station'));
   }
-  // populateMatches();
+  populateMatches();
 
   $('#getSchedule').click(() => {
     requestSchedule($('#eventCode').val());
+  })
+
+  $('#selectAll').click(() => {
+    selectAll();
+  })
+
+  $('#upload').click(() => {
+    uploadSelected();
+  })
+
+  $('#delete').click(() => {
+    deleteSelected();
   })
 
   $('#continue').click(() => {

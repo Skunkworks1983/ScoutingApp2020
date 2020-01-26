@@ -33,7 +33,7 @@
       <button type="button" id="clear" class="btn btn-danger" onclick="if(confirm('Do you want to clear the storage?')) {localStorage.clear(); location.reload()}">Clear Storage</button>
     </div>
   </div>
-  <div style="flex: 0.5">
+  <div style="flex: 0.3">
     <h6>Tablet Station</h6>
     <select name="tabletStation" id="station" class="custom-select">
       <option value="null" selected>Select Scout Station</option>
@@ -49,28 +49,31 @@
       </optgroup>
     </select>
   </div>
-  <div style="flex: 5" class="scroll">
+  <div style="flex: 5">
     <h5>Local Match Entries</h5>
-    <table class="table table-hover">
-      <thead>
-        <tr>
-          <td scope="col">#</td>
-          <td scope="col">Event</td scope="col">
-          <td scope="col">Match</td scope="col">
-          <td scope="col">Team</td scope="col">
-          <td scope="col">&times;</td>
-        </tr>
-      </thead>
-      <tbody id="table"></tbody>
-    </table>
+    <div class="scroll">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <td scope="col">#</td>
+            <td scope="col">Event</td scope="col">
+            <td scope="col">Match</td scope="col">
+            <td scope="col">Team</td scope="col">
+            <td scope="col">&times;</td>
+          </tr>
+        </thead>
+        <tbody id="table"></tbody>
+      </table>
+    </div>
   </div>
   <div style="flex: 0.5">
+    <button type="button" id="selectAll" class="btn btn-primary">Select All</button>
     <button type="button" id="upload" class="btn btn-primary">Upload Selected</button>
     <button type="button" id="delete" class="btn btn-primary">Delete Selected</button>
-    <button type="button" id="coords" class="btn btn-primary">Upload Coords</button>
   </div>
   <div>
-    <button type="button" id="continue" class="btn btn-lg btn-outline-success">Save</button>
+    <button type="button" id="coords" class="btn btn-primary">Upload Coords</button>
+    <button type="button" id="continue" class="btn btn-outline-success">Save and Continue</button>
   </div>
 </body>
 

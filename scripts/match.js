@@ -1,13 +1,13 @@
-const DEBUG = false;
+const DEBUG = true;
 const url = !DEBUG ? "http://73.109.240.48:1983/scouting" : "http://127.0.0.1:1983/scouting";
 
 var autoCanvas, autoCtx, teleCanvas, teleCtx, field;
 var totalBalls, lowerBalls, outerBalls, innerBalls, coords;
 const dotSize = 12;
-var autoShots = new Array;
-var teleShots = new Array;
-let autoHistory = new Array;
-let teleHistory = new Array;
+var autoShots = [];
+var teleShots = [];
+let autoHistory = [];
+let teleHistory = [];
 
 try {
   match = parseInt(localStorage.getItem('match'), 10);
@@ -210,7 +210,9 @@ async function uploadData(e) {
     .catch(err => {
       console.warn(err);
       if (localStorage.storedMatches) {
-        localStorage.setItem('storedMatches', JSON.stringify(JSON.parse(localStorage.getItem('storedMatches')).push(e)));
+        let currentData = JSON.parse(localStorage.getItem('storedMatches'));
+        currentData.push(e);
+        localStorage.setItem('storedMatches', JSON.stringify(currentData));
       } else {
         localStorage.setItem('storedMatches', JSON.stringify([e]));
       }
@@ -236,10 +238,14 @@ async function uploadShots(e) {
       console.warn(err);
       let shotArr = e;
       shotArr.team = team;
-      if (localStorage.storedCoords) {
-        localStorage.setItem('storedCoords', JSON.stringify(JSON.parse(localStorage.getItem('storedCoords')).push(shotArr)));
-      } else {
-        localStorage.setItem('storedCoords', JSON.stringify([shotArr]));
+      if (shotArr.autoHistory.length || shotArr.teleHistory.length) {
+        if (localStorage.storedCoords) {
+          let currentData = JSON.parse(localStorage.getItem('storedCoords'))
+          currentData.push(shotArr);
+          localStorage.setItem('storedCoords', JSON.stringify(currentData));
+        } else {
+          localStorage.setItem('storedCoords', JSON.stringify([shotArr]));
+        }
       }
       return false
     });
@@ -247,7 +253,7 @@ async function uploadShots(e) {
 
 function validateSubmit() {
   let valid = true;
-  if ($('#noShow:checked').length && $('*:checked').length) {
+  if ($('#noShow:checked').length && $('*:not(input[type="radio"]):checked').length > 1) {
     valid = false;
     $('#noShow').addClass('is-invalid');
   } else if ($('input[type="radio"]:checked').length < 1) {
@@ -273,7 +279,7 @@ function validateSubmit() {
         position: $('#position:checked').length ? true : false,
         park: $('#park:checked').length ? true : false,
         hang: $('#hang:checked').length ? true : false,
-        stuckBall: $('#stuckBall').length ? true : false,
+        stuckBall: $('#stuckBall:checked').length ? true : false,
         doubleHang: $('#doubleHang:checked').length ? true : false,
         autoShots: autoShots.filter(e => e !== null),
         teleShots: teleShots.filter(e => e !== null)
@@ -287,9 +293,9 @@ function validateSubmit() {
       };
       uploadShots(coordData);
       uploadData(data);
-    } else {
-      alert('There are errors in the form!');
     }
+  } else {
+    alert('There are errors in the form!');
   }
 }
 

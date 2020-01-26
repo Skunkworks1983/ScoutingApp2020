@@ -7,14 +7,16 @@ body {
 
 body>div {
   flex: 1;
+  margin: 0;
 }
 
 table {
-  width: 100vh
+  width: 100vw !important;
+  margin: 0;
 }
 
 .scroll {
-  height: 100vh;
+  height: 50vh;
   overflow-y: scroll !important;
 }
 
