@@ -20,6 +20,17 @@ table {
   overflow-y: scroll !important;
 }
 
+.select-boxes {
+  display: flex;
+  flex-flow: row wrap;
+}
+
+.select-boxes>div {
+  flex: 1;
+  margin-left: 4px;
+  margin-right: 4px;
+}
+
 h1,
 h2,
 h3,

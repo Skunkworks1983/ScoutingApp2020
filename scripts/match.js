@@ -1,4 +1,4 @@
-const DEBUG = false;
+const DEBUG = true;
 const url = !DEBUG ? "http://73.109.240.48:1983/scouting" : "http://127.0.0.1:1983/scouting";
 
 var autoCanvas, autoCtx, teleCanvas, teleCtx, field;
@@ -16,6 +16,7 @@ try {
   schedule = JSON.parse(localStorage.getItem('schedule'))[match - 1];
   alliance = localStorage.getItem('alliance') === 'Red' ? 'red' : 'blue';
   team = parseInt(schedule.alliances[alliance].team_keys[station - 1].substring(3), 10);
+  week = parseInt(localStorage.getItem('week'));
 } catch {
   alert('Error, you do not have a match schedule or settings configured!');
 }
@@ -72,6 +73,7 @@ function savePoint(e) {
   if (phase === 'auto') {
     autoShots.push({
       phase,
+      week,
       totalBalls,
       lowerBalls,
       outerBalls,
@@ -80,6 +82,7 @@ function savePoint(e) {
   } else {
     teleShots.push({
       phase,
+      week,
       totalBalls,
       lowerBalls,
       outerBalls,

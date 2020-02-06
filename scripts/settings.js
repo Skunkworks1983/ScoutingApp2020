@@ -1,4 +1,4 @@
-const DEBUG = false;
+const DEBUG = true;
 const url = !DEBUG ? "http://73.109.240.48:1983/scouting" : "http://127.0.0.1:1983/scouting";
 
 function requestSchedule(target) {
@@ -65,11 +65,17 @@ function goToPrematch() {
 function saveSettings() {
   let station = $('#station');
   if (station.val() != 'null') {
-    localStorage.setItem('station', parseInt(station.val().substring(station.val().length - 1), 10));
+    localStorage.setItem('station', station.val().substring(station.val().length - 1));
     localStorage.setItem('alliance', station.val().substring(0, 3))
-    goToPrematch();
   } else {
     station.addClass('is-invalid');
+  }
+  let week = $('#week');
+  if (week.val()) {
+    localStorage.setItem('week', week.val())
+    goToPrematch();
+  } else {
+    week.addClass('is-invalid');
   }
 }
 
@@ -182,9 +188,13 @@ function init() {
     eventError();
   }
 
-  if (localStorage.getItem('station')) {
+  if (localStorage.station) {
     $('#station').val(localStorage.getItem('alliance') + localStorage.getItem('station'));
   }
+  if (localStorage.week) {
+    $('#week').val(localStorage.getItem('week'));
+  }
+
   populateMatches();
 
   $('#getSchedule').click(() => {

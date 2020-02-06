@@ -33,21 +33,35 @@
       <button type="button" id="clear" class="btn btn-danger" onclick="if(confirm('Do you want to clear the storage?')) {localStorage.clear(); location.reload()}">Clear Storage</button>
     </div>
   </div>
-  <div style="flex: 0.3">
-    <h6>Tablet Station</h6>
-    <select name="tabletStation" id="station" class="custom-select">
-      <option value="null" selected>Select Scout Station</option>
-      <optgroup label="Red">
-        <option value="Red1">Red 1</option>
-        <option value="Red2">Red 2</option>
-        <option value="Red3">Red 3</option>
-      </optgroup>
-      <optgroup label="Blue">
-        <option value="Blu1">Blue 1</option>
-        <option value="Blu2">Blue 2</option>
-        <option value="Blu3">Blue 3</option>
-      </optgroup>
-    </select>
+  <div class="select-boxes">
+    <div>
+      <h6>Tablet Station</h6>
+      <select name="tabletStation" id="station" class="custom-select">
+        <option value="null" selected>Select Scout Station</option>
+        <optgroup label="Red">
+          <option value="Red1">Red 1</option>
+          <option value="Red2">Red 2</option>
+          <option value="Red3">Red 3</option>
+        </optgroup>
+        <optgroup label="Blue">
+          <option value="Blu1">Blue 1</option>
+          <option value="Blu2">Blue 2</option>
+          <option value="Blu3">Blue 3</option>
+        </optgroup>
+      </select>
+    </div>
+    <div>
+      <h6>FRC Week</h6>
+      <select name="week" id="week" class="custom-select">
+        <option value="1">Week 1</option>
+        <option value="2">Week 2</option>
+        <option value="3">Week 3</option>
+        <option value="4">Week 4</option>
+        <option value="5">Week 5</option>
+        <option value="6">District Champs (Week 6)</option>
+        <option value="8">Worlds (Week 8)</option>
+      </select>
+    </div>
   </div>
   <div style="flex: 5">
     <h5>Local Match Entries</h5>
